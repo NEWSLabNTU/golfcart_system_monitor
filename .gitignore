@@ -1,0 +1,10 @@
+# temporary files
+*~
+.*~
+*.sw[op]
+\#*#
+.vscode
+
+# Python
+*.py[oc]
+__pycache__/
