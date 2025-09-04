@@ -13,6 +13,7 @@ from dataclasses import dataclass, field, asdict
 from typing import Dict, Any, Optional, List, Union, ClassVar, Type
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+import pkg_resources
 
 import rclpy
 from rclpy.node import Node
@@ -86,9 +87,25 @@ class WebServerThread(threading.Thread):
         self.host = host
         self.port = port
 
-        # Get the package directory to find templates
-        self.pkg_dir = os.path.dirname(os.path.abspath(__file__))
-        self.template_dir = os.path.join(self.pkg_dir, 'templates')
+        # Use pkg_resources to find the template directory
+        # This works for both installed packages and development mode
+        try:
+            # Try to get the resource directory for the package
+            package_name = 'autosdv_system_monitor'
+            if pkg_resources.resource_exists(package_name, 'templates'):
+                # Get the actual file system path for the templates directory
+                self.template_dir = pkg_resources.resource_filename(package_name, 'templates')
+                node.get_logger().info(f"Found templates at: {self.template_dir}")
+            else:
+                # Fallback: use the directory where this file is located
+                self.pkg_dir = os.path.dirname(os.path.abspath(__file__))
+                self.template_dir = os.path.join(self.pkg_dir, 'templates')
+                node.get_logger().warn(f"Using fallback template directory: {self.template_dir}")
+        except Exception as e:
+            # If pkg_resources fails, use the local directory
+            self.pkg_dir = os.path.dirname(os.path.abspath(__file__))
+            self.template_dir = os.path.join(self.pkg_dir, 'templates')
+            node.get_logger().warn(f"pkg_resources failed ({e}), using local directory: {self.template_dir}")
 
         self.app = Flask(__name__,
                          template_folder=self.template_dir)
