@@ -19,6 +19,9 @@ monitor_topics:
     - [sensor_msgs/msg/NavSatFix, /sensing/gnss/ublox/nav_sat_fix, u-blox NavSatFix, monitor_gps, reliable]
     - [sensor_msgs/msg/NavSatFix, /sensing/gnss/garmin/fix, Garmin NavSatFix, monitor_gps, reliable]
     - [sensor_msgs/msg/NavSatFix, /sensing/gnss/septentrio/nav_sat_fix, Septentrio NavSatFix, monitor_gps, reliable]
+    - [nmea_msgs/msg/Sentence, /sensing/gnss/ublox/nmea_sentence, u-blox NMEA Sentence, monitor_gps, reliable]
+    - [rtcm_msgs/msg/Message, /sensing/gnss/ntrip/rtcm, NTRIP RTCM Corrections, monitor_gps, reliable]
+    - [ublox_msgs/msg/RxmRTCM, /sensing/gnss/ublox/rxmrtcm, u-blox RTCM Status, monitor_gps, reliable]
   vehicle:
     - [autoware_vehicle_msgs/msg/VelocityReport, /vehicle/status/velocity_status, Vehicle Velocity, monitor_vehicle, reliable]
     - [autoware_control_msgs/msg/Control, /control/command/control_cmd, Control Command, monitor_vehicle, reliable]
