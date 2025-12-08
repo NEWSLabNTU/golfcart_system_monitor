@@ -44,6 +44,19 @@ class TopicInfo:
     display_name: str
     param_name: str
     qos_reliability: str = "reliable"
+    yaml_category: str = ""  # Category from YAML config (lidar, camera, imu, etc.)
+
+
+# Mapping from YAML category names to display names for the web UI
+CATEGORY_DISPLAY_NAMES = {
+    'lidar': 'LiDAR Sensors',
+    'camera': 'Camera Sensors',
+    'imu': 'IMU Sensors',
+    'gnss': 'GNSS/GPS',
+    'vehicle': 'Vehicle',
+    'diagnostics': 'Diagnostics',
+    'system': 'System'
+}
 
 @dataclass
 class TopicStats:
@@ -240,13 +253,15 @@ class AutoSDVSystemMonitor(Node):
                         topic_info.topic_name,
                         topic_info.display_name,
                         self.callback_group,
-                        topic_info.qos_reliability
+                        topic_info.qos_reliability,
+                        topic_info.yaml_category
                     )
                     self.get_logger().debug(f"Monitoring topic: {topic_info.topic_name} ({topic_info.display_name})")
 
-    def _create_subscription(self, msg_type, topic, display_name, callback_group, qos_reliability):
+    def _create_subscription(self, msg_type, topic, display_name, callback_group, qos_reliability, yaml_category=""):
         """Helper to create a subscription and initialize its statistics"""
-        topic_type = self._get_topic_type(topic, display_name)
+        # Use YAML category to determine display group name
+        topic_type = CATEGORY_DISPLAY_NAMES.get(yaml_category, 'System')
         self.topics_stats[topic] = TopicStats(
             display_name=display_name,
             topic_type=topic_type,
@@ -351,7 +366,8 @@ class AutoSDVSystemMonitor(Node):
                         topic_name=topic_name,
                         display_name=display_name,
                         param_name=param_name,
-                        qos_reliability=qos_reliability
+                        qos_reliability=qos_reliability,
+                        yaml_category=category
                     ))
 
             # File watching is already set up
@@ -476,7 +492,8 @@ class AutoSDVSystemMonitor(Node):
                             topic_info.topic_name,
                             topic_info.display_name,
                             self.callback_group,
-                            topic_info.qos_reliability
+                            topic_info.qos_reliability,
+                            topic_info.yaml_category
                         )
                         self.get_logger().debug(f"Added monitoring for topic: {topic_info.topic_name} ({topic_info.display_name})")
 
@@ -486,23 +503,6 @@ class AutoSDVSystemMonitor(Node):
 
         if topics_to_remove:
             self.get_logger().info(f"Removed {len(topics_to_remove)} topics: {', '.join(topics_to_remove)}")
-
-    def _get_topic_type(self, topic, display_name):
-        """Determine the topic type based on its name or display name."""
-        if 'points' in topic or 'lidar' in topic:
-            return 'LiDAR Sensors'
-        elif 'camera' in topic or 'image' in topic:
-            return 'Camera Sensors'
-        elif 'imu' in topic:
-            return 'IMU Sensors'
-        elif 'gnss' in topic or 'nav_sat_fix' in topic:
-            return 'GNSS/GPS'
-        elif 'vehicle' in topic or 'control' in topic or 'odometry' in topic:
-            return 'Vehicle'
-        elif 'diagnostics' in topic:
-            return 'Diagnostics'
-        else:
-            return 'System'
 
     def topic_callback(self, msg, topic_name):
         """Generic callback for all subscribed topics"""
