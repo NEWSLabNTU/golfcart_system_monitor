@@ -13,6 +13,7 @@ monitor_topics:
   imu:
     - [sensor_msgs/msg/Imu, /sensing/imu/imu_data, Main IMU Data, monitor_imu, reliable]
     - [sensor_msgs/msg/Imu, /sensing/imu/mpu9250/imu_raw, MPU9250 Raw Data, monitor_imu, reliable]
+    - [sensor_msgs/msg/Imu, /sensing/camera/zedxm/zed_node/imu/data_raw, ZED IMU Raw Data, monitor_imu, reliable]
   gnss:
     - [geometry_msgs/msg/PoseStamped, /sensing/gnss/pose, GNSS Pose, monitor_gps, reliable]
     - [geometry_msgs/msg/PoseWithCovarianceStamped, /sensing/gnss/pose_with_covariance, GNSS Pose with Covariance, monitor_gps, reliable]
