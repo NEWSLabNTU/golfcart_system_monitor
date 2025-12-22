@@ -5,15 +5,15 @@ monitor_topics:
     - [sensor_msgs/msg/PointCloud2, /sensing/lidar/iv_points, Robin-W Points, monitor_lidar, best_effort]
     - [sensor_msgs/msg/PointCloud2, /sensing/lidar/velodyne_points, Velodyne Points, monitor_lidar, best_effort]
   camera:
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zed_node/rgb/image_rect_color, ZED RGB Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zed_node/left/image_rect_color, ZED Left Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zed_node/right/image_rect_color, ZED Right Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zed_node/stereo/image_rect_color, ZED Stereo Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zed_node/depth/depth_registered, ZED Depth Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zedxm/rgb/image_rect_color, ZED RGB Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zedxm/left/image_rect_color, ZED Left Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zedxm/right/image_rect_color, ZED Right Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zedxm/stereo/image_rect_color, ZED Stereo Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/zedxm/depth/depth_registered, ZED Depth Image, monitor_camera, reliable]
   imu:
     - [sensor_msgs/msg/Imu, /sensing/imu/imu_data, Main IMU Data, monitor_imu, reliable]
     - [sensor_msgs/msg/Imu, /sensing/imu/mpu9250/imu_raw, MPU9250 Raw Data, monitor_imu, reliable]
-    - [sensor_msgs/msg/Imu, /sensing/camera/zedxm/zed_node/imu/data_raw, ZED IMU Raw Data, monitor_imu, reliable]
+    - [sensor_msgs/msg/Imu, /sensing/camera/zedxm/zedxm/imu/data_raw, ZED IMU Raw Data, monitor_imu, reliable]
   gnss:
     - [geometry_msgs/msg/PoseStamped, /sensing/gnss/pose, GNSS Pose, monitor_gps, reliable]
     - [geometry_msgs/msg/PoseWithCovarianceStamped, /sensing/gnss/pose_with_covariance, GNSS Pose with Covariance, monitor_gps, reliable]
