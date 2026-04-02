@@ -1,25 +1,15 @@
 monitor_topics:
   lidar:
     - [sensor_msgs/msg/PointCloud2, /sensing/lidar/concatenated/pointcloud, Concatenated LiDAR, monitor_lidar, best_effort]
-    - [sensor_msgs/msg/PointCloud2, /sensing/lidar/bf_lidar/points_raw, Blickfeld Cube1 Points, monitor_lidar, reliable]
-    - [sensor_msgs/msg/PointCloud2, /sensing/lidar/iv_points, Robin-W Points, monitor_lidar, best_effort]
     - [sensor_msgs/msg/PointCloud2, /sensing/lidar/velodyne_points, Velodyne Points, monitor_lidar, best_effort]
   camera:
-    # ZED 5.1.0 topic names (changed from previous versions)
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/rgb/color/rect/image, ZED RGB Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/Image, /sensing/camera/zedxm/depth/depth_registered, ZED Depth Image, monitor_camera, reliable]
-    - [sensor_msgs/msg/PointCloud2, /sensing/camera/zedxm/point_cloud/cloud_registered, ZED Point Cloud, monitor_camera, reliable]
+    - [sensor_msgs/msg/Image, /sensing/camera/usb_cam/image_raw, USB Camera Image, monitor_camera, reliable]
   imu:
     - [sensor_msgs/msg/Imu, /sensing/imu/imu_data, Main IMU Data, monitor_imu, reliable]
-    - [sensor_msgs/msg/Imu, /sensing/imu/mpu9250/imu_raw, MPU9250 Raw Data, monitor_imu, reliable]
-    # ZED 5.1.0: imu/data (not imu/data_raw)
-    - [sensor_msgs/msg/Imu, /sensing/camera/zedxm/imu/data, ZED IMU Data, monitor_imu, reliable]
   gnss:
     - [geometry_msgs/msg/PoseStamped, /sensing/gnss/pose, GNSS Pose, monitor_gps, reliable]
     - [geometry_msgs/msg/PoseWithCovarianceStamped, /sensing/gnss/pose_with_covariance, GNSS Pose with Covariance, monitor_gps, reliable]
     - [sensor_msgs/msg/NavSatFix, /sensing/gnss/ublox/nav_sat_fix, u-blox NavSatFix, monitor_gps, reliable]
-    - [sensor_msgs/msg/NavSatFix, /sensing/gnss/garmin/fix, Garmin NavSatFix, monitor_gps, reliable]
-    - [sensor_msgs/msg/NavSatFix, /sensing/gnss/septentrio/nav_sat_fix, Septentrio NavSatFix, monitor_gps, reliable]
     - [nmea_msgs/msg/Sentence, /sensing/gnss/ublox/nmea_sentence, u-blox NMEA Sentence, monitor_gps, reliable]
     - [rtcm_msgs/msg/Message, /sensing/gnss/ntrip/rtcm, NTRIP RTCM Corrections, monitor_gps, reliable]
     - [ublox_msgs/msg/RxmRTCM, /sensing/gnss/ublox/rxmrtcm, u-blox RTCM Status, monitor_gps, reliable]
