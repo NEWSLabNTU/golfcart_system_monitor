@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(autosdv_system_monitor)
+project(golfcart_system_monitor)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -24,7 +24,7 @@ install(DIRECTORY config/
 
 # Install executables
 install(PROGRAMS
-  ${PROJECT_NAME}/autosdv_system_monitor_node.py
+  ${PROJECT_NAME}/golfcart_system_monitor_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

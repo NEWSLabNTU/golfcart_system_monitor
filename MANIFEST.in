@@ -1,1 +1,1 @@
-include autosdv_system_monitor/templates/*.html
+include golfcart_system_monitor/templates/*.html

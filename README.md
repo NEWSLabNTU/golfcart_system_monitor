@@ -1,4 +1,4 @@
-# AutoSDV System Monitor
+# Golf Cart System Monitor
 
 A ROS2 package that provides real-time monitoring of system topics through a web interface.
 
@@ -17,7 +17,7 @@ A ROS2 package that provides real-time monitoring of system topics through a web
 
 ### Launch the monitor
 ```bash
-ros2 launch autosdv_system_monitor autosdv_system_monitor.launch.yaml
+ros2 launch golfcart_system_monitor golfcart_system_monitor.launch.yaml
 ```
 
 ### Configuration

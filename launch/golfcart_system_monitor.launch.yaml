@@ -1,0 +1,46 @@
+launch:
+# Monitoring a sensor that is deliberately switched off reports it as failed.
+# Indoors that is five GNSS rows permanently red, which teaches operators to
+# ignore the monitor — the opposite of what a monitor is for.
+- arg:
+    name: use_gnss
+    default: "true"
+- arg:
+    name: monitor_gps
+    default: $(var use_gnss)
+
+- node:
+    pkg: golfcart_system_monitor
+    exec: golfcart_system_monitor_node.py
+    name: golfcart_system_monitor
+    param:
+    -
+      name: topics_config_file
+      value: "$(find-pkg-share golfcart_system_monitor)/config/monitor_topics.yaml"
+    -
+      name: monitor_lidar
+      value: true
+    -
+      name: monitor_camera
+      value: true
+    -
+      name: monitor_imu
+      value: true
+    -
+      name: monitor_gps
+      value: $(var monitor_gps)
+    -
+      name: monitor_vehicle
+      value: true
+    -
+      name: monitor_diagnostics
+      value: true
+    -
+      name: report_interval_sec
+      value: 5.0
+    -
+      name: web_server_host
+      value: 0.0.0.0
+    -
+      name: web_server_port
+      value: 8080

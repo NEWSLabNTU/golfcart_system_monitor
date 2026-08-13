@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>autosdv_system_monitor</name>
+  <name>golfcart_system_monitor</name>
   <version>1.0.0</version>
-  <description>AutoSDV system monitoring package with web interface for ROS2 topics</description>
+  <description>Golf Cart system monitoring package with web interface for ROS2 topics</description>
   
-  <maintainer email="autosdv@example.com">AutoSDV Team</maintainer>
+  <maintainer email="golfcart@example.com">Golf Cart Team</maintainer>
   <license>Apache-2.0</license>
   
-  <author email="autosdv@example.com">AutoSDV Team</author>
+  <author email="golfcart@example.com">Golf Cart Team</author>
   
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>

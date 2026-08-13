@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'autosdv_system_monitor'
+package_name = 'golfcart_system_monitor'
 
 setup(
     name=package_name,
@@ -21,14 +21,14 @@ setup(
     include_package_data=True,
     install_requires=['setuptools'],
     zip_safe=False,
-    maintainer='AutoSDV Team',
-    maintainer_email='autosdv@example.com',
-    description='AutoSDV system monitoring package with web interface for ROS2 topics',
+    maintainer='Golf Cart Team',
+    maintainer_email='golfcart@example.com',
+    description='Golf Cart system monitoring package with web interface for ROS2 topics',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'autosdv_system_monitor_node = autosdv_system_monitor.autosdv_system_monitor_node:main',
+            'golfcart_system_monitor_node = golfcart_system_monitor.golfcart_system_monitor_node:main',
         ],
     },
 )

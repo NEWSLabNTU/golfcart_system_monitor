@@ -104,7 +104,7 @@ class WebServerThread(threading.Thread):
         # This works for both installed packages and development mode
         try:
             # Try to get the resource directory for the package
-            package_name = 'autosdv_system_monitor'
+            package_name = 'golfcart_system_monitor'
             if pkg_resources.resource_exists(package_name, 'templates'):
                 # Get the actual file system path for the templates directory
                 self.template_dir = pkg_resources.resource_filename(package_name, 'templates')
@@ -133,7 +133,7 @@ class WebServerThread(threading.Thread):
         def index():
             """Serve the main HTML page."""
             return render_template('monitor.html',
-                                 title="AutoSDV System Monitor",
+                                 title="Golf Cart System Monitor",
                                  node_name=self.node.get_name())
 
         @self.app.route('/api/status')
@@ -172,14 +172,14 @@ class ConfigFileChangeHandler(FileSystemEventHandler):
             self.monitor_node.get_logger().debug(f"Detected change to config file: {event.src_path}")
             self.monitor_node.handle_config_file_change()
 
-class AutoSDVSystemMonitor(Node):
+class GolfCartSystemMonitor(Node):
     """
     A ROS2 node that monitors various sensor and vehicle interface topics
     and provides a web interface to view their status.
     """
 
     def __init__(self):
-        super().__init__('autosdv_system_monitor')
+        super().__init__('golfcart_system_monitor')
 
         # Use a callback group to allow concurrent processing
         self.callback_group = ReentrantCallbackGroup()
@@ -232,7 +232,7 @@ class AutoSDVSystemMonitor(Node):
         self.web_server = WebServerThread(self, host, port)
         self.web_server.start()
 
-        self.get_logger().info('AutoSDV System Monitor started')
+        self.get_logger().info('Golf Cart System Monitor started')
         self.get_logger().info(f'Monitoring topics with report interval of {report_interval} seconds')
         self.get_logger().info(f'Web interface available at: http://{host}:{port}')
 
@@ -731,7 +731,7 @@ class AutoSDVSystemMonitor(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = AutoSDVSystemMonitor()
+    node = GolfCartSystemMonitor()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
