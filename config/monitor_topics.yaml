@@ -1,11 +1,45 @@
 monitor_topics:
   lidar:
     - [sensor_msgs/msg/PointCloud2, /sensing/lidar/concatenated/pointcloud, Concatenated LiDAR, monitor_lidar, best_effort]
-    - [sensor_msgs/msg/PointCloud2, /sensing/lidar/velodyne_points, Velodyne Points, monitor_lidar, best_effort]
+    # /sensing/lidar/vlp32/velodyne_points, not /sensing/lidar/velodyne_points.
+    # The driver runs inside `push-ros-namespace namespace="vlp32"`, so the
+    # un-namespaced topic has never existed and this entry sat permanently at
+    # NO DATA -- monitoring a phantom while the real Velodyne went unwatched.
+    # Confirmed against the concatenator config and all three NTU recordings.
+    - [sensor_msgs/msg/PointCloud2, /sensing/lidar/vlp32/velodyne_points, Velodyne Points, monitor_lidar, best_effort]
+    - [sensor_msgs/msg/PointCloud2, /sensing/lidar/falcon/iv_points, Seyond Falcon Points, monitor_lidar, reliable]
   camera:
-    - [sensor_msgs/msg/Image, /sensing/camera/usb_cam/image_raw, USB Camera Image, monitor_camera, reliable]
+    # There is no usb_cam on this vehicle and no raw Image topic anywhere:
+    # camera.launch.xml brings up left, right and rear through gscam, and gscam
+    # is configured with enable_pub_plugins: ["image_transport/compressed"], so
+    # compressed is the only transport published. The old entry could never
+    # match, which left camera monitoring entirely non-functional.
+    #
+    # These read NO DATA when the USB cameras are not running, which is the
+    # correct report rather than a broken one. QoS is unverified: these three
+    # were not captured in the NTU recordings, so `reliable` is carried over
+    # from the entry they replace and matches image_transport's default.
+    - [sensor_msgs/msg/CompressedImage, /sensing/camera/left/image_raw/compressed, Left Camera, monitor_camera, reliable]
+    - [sensor_msgs/msg/CompressedImage, /sensing/camera/right/image_raw/compressed, Right Camera, monitor_camera, reliable]
+    - [sensor_msgs/msg/CompressedImage, /sensing/camera/rear/image_raw/compressed, Rear Camera, monitor_camera, reliable]
+    # The ZED. Types and QoS taken from the NTU recordings rather than assumed --
+    # every ZED topic is published RELIABLE, which is not what one would guess
+    # for sensor data, and subscribing best-effort would silently receive
+    # nothing and report the camera as dead.
+    - [sensor_msgs/msg/CompressedImage, /sensing/camera/zed/rgb/color/rect/image/compressed, ZED RGB Image, monitor_camera, reliable]
+    - [sensor_msgs/msg/CameraInfo, /sensing/camera/zed/rgb/color/rect/camera_info, ZED Camera Info, monitor_camera, reliable]
+    # /sensing/camera/zed/status/health is deliberately NOT listed. Its type is
+    # zed_msgs/msg/HealthStatusStamped, and this node resolves types from a
+    # hardcoded map, so an entry for it would be skipped with a warning unless
+    # the monitor took a dependency on the ZED wrapper's messages. The RGB and
+    # IMU topics above already answer "is the ZED alive".
   imu:
     - [sensor_msgs/msg/Imu, /sensing/imu/imu_data, Main IMU Data, monitor_imu, reliable]
+    # The ZED's own IMU, upstream of imu_corrector. Worth watching separately:
+    # imu_data alone cannot distinguish "the IMU died" from "the corrector
+    # died", and with the XSens out of service this is the only IMU the vehicle
+    # has -- it is what feeds gyro_odometer and therefore the EKF.
+    - [sensor_msgs/msg/Imu, /sensing/camera/zed/imu/data, ZED IMU Data, monitor_imu, reliable]
   gnss:
     - [geometry_msgs/msg/PoseStamped, /sensing/gnss/pose, GNSS Pose, monitor_gps, reliable]
     - [geometry_msgs/msg/PoseWithCovarianceStamped, /sensing/gnss/pose_with_covariance, GNSS Pose with Covariance, monitor_gps, reliable]

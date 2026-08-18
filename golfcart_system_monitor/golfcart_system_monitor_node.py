@@ -21,9 +21,15 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.time import Time
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 from rcl_interfaces.msg import Log
+# GNSS message packages are already exec_depends of this package; the type map
+# below simply never listed them, so every GNSS entry in monitor_topics.yaml
+# was skipped at load with a warning and showed as if nothing published it.
+from nmea_msgs.msg import Sentence
+from rtcm_msgs.msg import Message as RtcmMessage
+from ublox_msgs.msg import RxmRTCM
 
 # Sensor imports
-from sensor_msgs.msg import Imu, PointCloud2, Image, CompressedImage, NavSatFix
+from sensor_msgs.msg import Imu, PointCloud2, Image, CompressedImage, NavSatFix, CameraInfo
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry
 from diagnostic_msgs.msg import DiagnosticArray
@@ -329,6 +335,7 @@ class GolfCartSystemMonitor(Node):
                 'sensor_msgs/msg/PointCloud2': PointCloud2,
                 'sensor_msgs/msg/Image': Image,
                 'sensor_msgs/msg/CompressedImage': CompressedImage,
+                'sensor_msgs/msg/CameraInfo': CameraInfo,
                 'sensor_msgs/msg/NavSatFix': NavSatFix,
                 'geometry_msgs/msg/PoseStamped': PoseStamped,
                 'geometry_msgs/msg/PoseWithCovarianceStamped': PoseWithCovarianceStamped,
@@ -336,7 +343,10 @@ class GolfCartSystemMonitor(Node):
                 'diagnostic_msgs/msg/DiagnosticArray': DiagnosticArray,
                 'autoware_vehicle_msgs/msg/VelocityReport': VelocityReport,
                 'autoware_control_msgs/msg/Control': Control,
-                'rcl_interfaces/msg/Log': Log
+                'rcl_interfaces/msg/Log': Log,
+                'nmea_msgs/msg/Sentence': Sentence,
+                'rtcm_msgs/msg/Message': RtcmMessage,
+                'ublox_msgs/msg/RxmRTCM': RxmRTCM
             }
 
             for category, topics in topics_config.items():
