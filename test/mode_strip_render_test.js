@@ -9,9 +9,14 @@
 // every chip and the page still looks entirely plausible. The fixture keeps the
 // real node ordering for that reason, and nothing in it may be renumbered.
 //
-// Phase 4-O sub-phase O-C. The live end-to-end counterpart is
-// scripts/check/mode_strip_test.sh in the golf cart repo, which injects a real
-// fault and times the reaction.
+// Phase 4-O sub-phases O-C (the chips) and O-D (the failing path). The live
+// end-to-end counterpart is scripts/check/mode_strip_test.sh in the golf cart
+// repo, which injects a real fault and times the reaction.
+//
+// The O-D checks fault a named LEAF and propagate the level up through the
+// fixture's real `links`, rather than setting mode levels directly. That keeps
+// the traversal under test: attribution must name the leaf, never an ancestor
+// unit that merely inherited the level.
 
 const fs = require('fs');
 const path = require('path');
@@ -23,8 +28,8 @@ const STATUS = fixture.status;
 
 // ---- minimal DOM and WebSocket, enough for the strip ----------------------
 const els = {};
-const mkEl = (id) => (els[id] = { id, className: '', textContent: '', innerHTML: '' });
-['mode-chips', 'bridge-state', 'mode-note'].forEach(mkEl);
+const mkEl = (id) => (els[id] = { id, className: '', textContent: '', innerHTML: '', onclick: null });
+['mode-chips', 'bridge-state', 'mode-note', 'fault-paths', 'fault-toggle'].forEach(mkEl);
 global.document = { getElementById: (id) => els[id] || mkEl(id) };
 global.location = { hostname: '127.0.0.1' };
 global.setTimeout = () => 0;
@@ -71,6 +76,7 @@ const chips = () =>
 function statusWith(levels, latch) {
     const s = JSON.parse(JSON.stringify(STATUS));
     s.nodes.forEach((n) => { n.level = 0; n.latch_level = 0; });
+    s.diags.forEach((d) => { d.level = 0; });
     STRUCT.nodes.forEach((n, i) => {
         const name = n.path.replace('/autoware/modes/', '');
         if (levels && levels[name] !== undefined) s.nodes[i].level = levels[name];
@@ -78,6 +84,32 @@ function statusWith(levels, latch) {
     });
     return s;
 }
+
+// Fault one named LEAF and propagate the level up every ancestor unit, the way
+// the aggregator does. Used for the O-D failing-path checks, so the fixture
+// stays a plain capture rather than a hand-built tree.
+function statusWithLeafFaults(names, level) {
+    const s = statusWith({});
+    const parentOf = {};
+    STRUCT.links.forEach((l) => { (parentOf[l.child] = parentOf[l.child] || []).push(l.parent); });
+    names.forEach((name) => {
+        const j = STRUCT.diags.findIndex((d) => d.name === name);
+        if (j < 0) throw new Error('fixture has no leaf named ' + name);
+        s.diags[j].level = level;
+        const up = [STRUCT.diags[j].parent];
+        const seen = {};
+        while (up.length) {
+            const i = up.pop();
+            if (seen[i]) continue;
+            seen[i] = true;
+            s.nodes[i].level = Math.max(s.nodes[i].level, level);
+            (parentOf[i] || []).forEach((p) => up.push(p));
+        }
+    });
+    return s;
+}
+
+const paths = () => els['fault-paths'].innerHTML;
 
 let fails = 0;
 function check(label, cond, detail) {
@@ -107,6 +139,11 @@ setImmediate(() => {
 
     deliver('/api/system/diagnostics/status', statusWith({}));
     check('all-OK renders all green', chips().every((c) => c.endsWith('=mode-ok')), chips().join(' '));
+    // Before anything has ever faulted, the fault list must be silent. Later in
+    // this file it is deliberately NOT empty after a fault clears: retention
+    // across the session is the point of O-D, so this has to be asserted here.
+    check('a never-faulted system shows no fault paths at all', paths() === '',
+        JSON.stringify(paths().slice(0, 60)));
 
     // The real case: one AEB leaf fault takes out three modes and leaves four.
     deliver('/api/system/diagnostics/status',
@@ -121,6 +158,46 @@ setImmediate(() => {
     deliver('/api/system/diagnostics/status', statusWith({}, { autonomous: 2 }));
     check('a fault that has already cleared is still marked',
         chips().includes('autonomous=mode-ok latched'), chips().join(' '));
+
+    // ---- O-D: the failing path ------------------------------------------
+    const AEB = 'autonomous_emergency_braking: aeb_emergency_stop';
+    const NDT = 'ndt_scan_matcher: scan_matching_status';
+
+    deliver('/api/system/diagnostics/status', statusWithLeafFaults([AEB], 2));
+    check('the originating leaf is named', paths().includes(AEB));
+    check('unavailable modes are listed', /autonomous[\s\S]*unavailable/.test(paths()));
+    // Attribution must name the LEAF, not an ancestor unit that merely
+    // inherited the level. is_dependent reads false on every node in this
+    // graph, so the traversal must not rely on it.
+    check('no inherited unit is reported as a cause',
+        !/class="fault-leaf">\/autoware\//.test(paths()),
+        (paths().match(/class="fault-leaf">[^<]*/g) || []).join(' | '));
+
+    // Two faults under different subtrees. Both must be named, and the mode
+    // that depends on both must list both.
+    deliver('/api/system/diagnostics/status', statusWithLeafFaults([AEB, NDT], 2));
+    check('two simultaneous faults both name their originating leaf',
+        paths().includes(AEB) && paths().includes(NDT),
+        (paths().match(/class="fault-leaf">[^<]*/g) || []).join(' | '));
+
+    // The unit chain is the expandable detail, not the default view: rendering
+    // all 63 nodes would bury the one red line through them.
+    check('the unit chain is present but collapsed by default',
+        paths().includes('fault-chain') && !/class="fault-mode[^"]*expanded/.test(paths()));
+    els['fault-toggle'].onclick();
+    check('expanding reveals the chain of graph units',
+        /class="fault-mode[^"]*expanded/.test(paths())
+        && /\/autoware\/control[\s\S]*&gt;/.test(paths()));
+    els['fault-toggle'].onclick();
+
+    // latch_level is inert on this vehicle: upstream's graph configures no
+    // latching, so the field stays 0 even while a node is at ERROR. Retention
+    // therefore has to be client side, or a fault that clears before anyone
+    // looks leaves no trace.
+    deliver('/api/system/diagnostics/status', statusWith({}));
+    check('a cleared fault is still attributable after it recovers',
+        paths().includes(AEB) && /recovered/.test(paths()),
+        JSON.stringify(paths().slice(0, 120)));
 
     // An aggregator restart rebuilds the graph and changes its id. Indexing the
     // new status into the old struct would mislabel every chip.

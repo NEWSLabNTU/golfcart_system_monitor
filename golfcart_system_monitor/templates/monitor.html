@@ -191,6 +191,49 @@
             color: #777;
             margin-top: 8px;
         }
+        /* Failing paths: which leaf made which mode unavailable. */
+        .fault-paths { margin-top: 12px; }
+        .fault-mode {
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        .fault-mode-name {
+            font-weight: bold;
+            color: #f44336;
+        }
+        .fault-cause {
+            margin: 6px 0 0 16px;
+            font-size: 0.9em;
+        }
+        .fault-leaf {
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .fault-msg { color: #555; }
+        /* The chain of graph units between the mode and the leaf. Hidden until
+           expanded: showing all 63 nodes is a wall of green that hides the one
+           red line through it. */
+        .fault-chain {
+            display: none;
+            font-family: monospace;
+            font-size: 0.8em;
+            color: #888;
+            margin-left: 16px;
+        }
+        .expanded .fault-chain { display: block; }
+        .fault-toggle {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 0.75em;
+            padding: 2px 8px;
+            cursor: pointer;
+            color: #555;
+        }
+        /* Faults seen earlier in this session that have since cleared. */
+        .fault-cleared { opacity: 0.65; }
+        .fault-cleared .fault-mode-name { color: #ff9800; }
         .refresh-btn {
             background-color: #2196F3;
             color: white;
@@ -241,6 +284,9 @@
                 <span class="mode-chip mode-unknown">no graph yet</span>
             </div>
             <div id="mode-note" class="mode-note"></div>
+            <!-- Which leaf made which mode unavailable. Empty when nothing is
+                 wrong, which is the common case and should stay quiet. -->
+            <div id="fault-paths" class="fault-paths"></div>
         </div>
 
         <div class="refresh-container">
@@ -309,6 +355,22 @@
         var chipsEl  = document.getElementById('mode-chips');
         var stateEl  = document.getElementById('bridge-state');
         var noteEl   = document.getElementById('mode-note');
+        var pathsEl  = document.getElementById('fault-paths');
+
+        var childrenOf = {};    // node index -> child node indices
+        var leavesOf = {};      // node index -> leaf indices
+        var expanded = false;   // show the full unit chain, not just the leaf
+        var lastStatus = null;  // so the expand toggle can re-render in place
+
+        // Worst level seen per mode since this page loaded, and the causes that
+        // went with it.
+        //
+        // This exists because DiagNodeStatus.latch_level does NOT latch on this
+        // vehicle: upstream's graph configures no latching anywhere, so the
+        // field reads 0 even while a node is at ERROR (measured, see the phase
+        // doc). Without retaining it here, a fault that clears before an
+        // operator looks up leaves no trace at all.
+        var history = {};
 
         function setBridge(cls, text) {
             stateEl.className = 'bridge-state ' + cls;
@@ -319,8 +381,9 @@
         // reporting no faults. Blank the chips and say why.
         function bridgeLost(why) {
             setBridge('bridge-down', why);
-            graph = null; modeIdx = []; lastStatusMs = 0;
+            graph = null; modeIdx = []; lastStatusMs = 0; lastStatus = null;
             chipsEl.innerHTML = '<span class="mode-chip mode-unknown">no data</span>';
+            pathsEl.innerHTML = '';
             noteEl.textContent = 'Mode availability is unknown while the bridge is down. '
                 + 'This is not the same as "no faults".';
         }
@@ -372,7 +435,54 @@
             for (var i = 0; i < msg.nodes.length; i++) {
                 if (msg.nodes[i].path.indexOf('/autoware/modes/') === 0) { modeIdx.push(i); }
             }
+            // links carry parent and child as indices into nodes; diags carry
+            // only a parent index. Build both adjacency maps once per struct.
+            childrenOf = {}; leavesOf = {};
+            for (var k = 0; k < msg.links.length; k++) {
+                var l = msg.links[k];
+                (childrenOf[l.parent] = childrenOf[l.parent] || []).push(l.child);
+            }
+            for (var d = 0; d < msg.diags.length; d++) {
+                var p = msg.diags[d].parent;
+                (leavesOf[p] = leavesOf[p] || []).push(d);
+            }
+            history = {};
             render(null);
+        }
+
+        // Walk down from a mode root through units that are themselves bad, and
+        // collect the LEAVES that are bad. A leaf is the origin of a fault; a
+        // unit above it has only inherited one.
+        //
+        // Note on is_dependent: it is NOT the inherited-failure marker. It reads
+        // false on every node in this graph, including nodes that plainly
+        // inherited their level (measured). Do not build attribution on it.
+        function causesOf(rootIdx, status) {
+            var out = [], seen = {};
+            function walk(i, chain) {
+                if (seen[i]) { return; }
+                seen[i] = true;
+                // Anonymous inline and/or units have an empty path. Keep them
+                // out of the displayed chain rather than rendering blanks.
+                var here = graph.nodes[i].path
+                    ? chain.concat([graph.nodes[i].path]) : chain;
+                var kids = leavesOf[i] || [];
+                for (var a = 0; a < kids.length; a++) {
+                    var ls = status.diags[kids[a]];
+                    if (ls && ls.level > 0) {
+                        out.push({name: graph.diags[kids[a]].name, level: ls.level,
+                                  message: ls.message || '', chain: here});
+                    }
+                }
+                var cs = childrenOf[i] || [];
+                for (var b = 0; b < cs.length; b++) {
+                    if (status.nodes[cs[b]] && status.nodes[cs[b]].level > 0) {
+                        walk(cs[b], here);
+                    }
+                }
+            }
+            walk(rootIdx, []);
+            return out;
         }
 
         function onStatus(msg) {
@@ -385,6 +495,7 @@
             }
             if (msg.nodes.length !== graph.nodes.length) { refetchStruct(); return; }
             lastStatusMs = Date.now();
+            lastStatus = msg;
             render(msg);
         }
 
@@ -433,6 +544,78 @@
                 ? (graph.nodes.length + ' nodes, ' + graph.diags.length
                    + ' leaves. Underline marks a mode that faulted earlier.')
                 : 'Graph received, waiting for the first status message.';
+            renderPaths(status);
+        }
+
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function renderPaths(status) {
+            if (!status) { pathsEl.innerHTML = ''; return; }
+
+            for (var k = 0; k < modeIdx.length; k++) {
+                var i = modeIdx[k];
+                var name = graph.nodes[i].path.replace('/autoware/modes/', '');
+                var lvl = status.nodes[i].level;
+                if (lvl > 0) {
+                    var causes = causesOf(i, status);
+                    // Keep the worst level and the causes seen with it.
+                    if (!history[name] || lvl >= history[name].level) {
+                        history[name] = {level: lvl, causes: causes};
+                    }
+                    history[name].current = true;
+                } else if (history[name]) {
+                    history[name].current = false;
+                }
+            }
+
+            var names = Object.keys(history);
+            if (names.length === 0) {
+                pathsEl.innerHTML = '';
+                return;
+            }
+            names.sort(function (a, b) {
+                // Current faults first, then by severity.
+                if (history[a].current !== history[b].current) { return history[a].current ? -1 : 1; }
+                return history[b].level - history[a].level;
+            });
+
+            var html = '<button class="fault-toggle" id="fault-toggle">'
+                     + (expanded ? 'hide graph paths' : 'show graph paths') + '</button>';
+            for (var n = 0; n < names.length; n++) {
+                var h = history[names[n]];
+                html += '<div class="fault-mode' + (h.current ? '' : ' fault-cleared')
+                     + (expanded ? ' expanded' : '') + '">'
+                     + '<span class="fault-mode-name">' + esc(names[n]) + '</span> '
+                     + (h.current ? 'unavailable' : 'recovered, faulted earlier this session');
+                if (h.causes.length === 0) {
+                    // The mode is bad but no leaf under it is. Worth saying so
+                    // rather than showing an empty list: it means the fault came
+                    // from a unit with no diagnostic beneath it.
+                    html += '<div class="fault-cause">no faulting leaf found beneath this mode</div>';
+                }
+                for (var c = 0; c < h.causes.length; c++) {
+                    var cz = h.causes[c];
+                    html += '<div class="fault-cause">'
+                         + '<span class="fault-leaf">' + esc(cz.name) + '</span> '
+                         + '<span class="' + (LEVEL_CLASS[cz.level] || '') + '" '
+                         + 'style="color:inherit">[' + (LEVEL_NAME[cz.level] || cz.level) + ']</span>'
+                         + (cz.message ? ' <span class="fault-msg">' + esc(cz.message) + '</span>' : '')
+                         + '<div class="fault-chain">' + esc(cz.chain.join('  >  ')) + '</div>'
+                         + '</div>';
+                }
+                html += '</div>';
+            }
+            pathsEl.innerHTML = html;
+            var btn = document.getElementById('fault-toggle');
+            if (btn) {
+                btn.onclick = function () {
+                    expanded = !expanded;
+                    if (lastStatus) { renderPaths(lastStatus); }
+                };
+            }
         }
 
         // Status stops arriving when the aggregator dies. Nothing else notices,
