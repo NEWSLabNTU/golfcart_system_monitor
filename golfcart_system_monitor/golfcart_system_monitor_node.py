@@ -138,9 +138,16 @@ class WebServerThread(threading.Thread):
         @self.app.route('/')
         def index():
             """Serve the main HTML page."""
+            # The mode strip talks to rosbridge from the browser, not through
+            # this process. Only the port is passed: the host has to be whatever
+            # the operator typed to reach this page, because the monitor is
+            # routinely opened from another machine and a hardcoded localhost
+            # would work on the vehicle and fail everywhere else.
             return render_template('monitor.html',
                                  title="Golf Cart System Monitor",
-                                 node_name=self.node.get_name())
+                                 node_name=self.node.get_name(),
+                                 rosbridge_port=self.node.get_parameter(
+                                     'rosbridge_port').value)
 
         @self.app.route('/api/status')
         def status():
@@ -215,6 +222,9 @@ class GolfCartSystemMonitor(Node):
         self.declare_parameter('web_server_host', 'localhost')
         self.declare_parameter('web_server_port', 8080)
         self.declare_parameter('topics_config_file', '')
+        # Where the browser reaches rosbridge for the mode availability strip.
+        # This node does not connect to it; the page does. See templates/monitor.html.
+        self.declare_parameter('rosbridge_port', 9090)
 
         # Load topics to monitor from config file
         self.monitor_topics = self._load_monitor_topics()

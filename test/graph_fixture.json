@@ -1,0 +1,1365 @@
+{
+ "struct": {
+  "stamp": {
+   "sec": 1787246864,
+   "nanosec": 942098163
+  },
+  "id": "18cd938deecde6f3",
+  "nodes": [
+   {
+    "path": "/autoware/modes/local"
+   },
+   {
+    "path": "/autoware/modes/remote"
+   },
+   {
+    "path": "/autoware/modes/stop"
+   },
+   {
+    "path": "/autoware/modes/autonomous"
+   },
+   {
+    "path": "/autoware/modes/pull_over"
+   },
+   {
+    "path": "/autoware/modes/comfortable_stop"
+   },
+   {
+    "path": "/autoware/modes/emergency_stop"
+   },
+   {
+    "path": "/autoware/debug/tools"
+   },
+   {
+    "path": "/autoware/control/local"
+   },
+   {
+    "path": "/autoware/control/remote"
+   },
+   {
+    "path": "/adapi/mrm_request/delegate"
+   },
+   {
+    "path": "/autoware/map"
+   },
+   {
+    "path": "/autoware/localization"
+   },
+   {
+    "path": "/autoware/planning"
+   },
+   {
+    "path": "/autoware/perception"
+   },
+   {
+    "path": "/autoware/control"
+   },
+   {
+    "path": "/autoware/vehicle"
+   },
+   {
+    "path": "/autoware/system"
+   },
+   {
+    "path": "/autoware/system/service_log_checker"
+   },
+   {
+    "path": "/autoware/control/topic_rate_check/external_cmd_selector"
+   },
+   {
+    "path": "/autoware/control/topic_rate_check/external_cmd_converter"
+   },
+   {
+    "path": "/autoware/map/topic_rate_check/vector_map"
+   },
+   {
+    "path": "/autoware/map/topic_rate_check/pointcloud_map"
+   },
+   {
+    "path": "/autoware/localization/state"
+   },
+   {
+    "path": ""
+   },
+   {
+    "path": "/autoware/planning/routing/state"
+   },
+   {
+    "path": ""
+   },
+   {
+    "path": "/autoware/perception/topic_rate_check/objects"
+   },
+   {
+    "path": "/autoware/perception/topic_rate_check/pointcloud"
+   },
+   {
+    "path": "/autoware/control/topic_rate_check/trajectory_follower"
+   },
+   {
+    "path": "/autoware/control/topic_rate_check/control_command"
+   },
+   {
+    "path": "/autoware/control/node_alive_monitoring/command_gate"
+   },
+   {
+    "path": "/autoware/control/emergency_braking"
+   },
+   {
+    "path": "/autoware/control/performance_monitoring/lane_departure"
+   },
+   {
+    "path": "/autoware/control/performance_monitoring/control_state"
+   },
+   {
+    "path": "/autoware/vehicle/topic_rate_check/velocity"
+   },
+   {
+    "path": "/autoware/vehicle/topic_rate_check/steering"
+   },
+   {
+    "path": "/autoware/system/duplicated_node_checker"
+   },
+   {
+    "path": "/autoware/system/topic_rate_check/emergency_control_command"
+   },
+   {
+    "path": "/autoware/system/emergency_stop_operation"
+   },
+   {
+    "path": "/autoware/localization/topic_rate_check/transform"
+   },
+   {
+    "path": "/autoware/localization/topic_rate_check/pose_twist_fusion"
+   },
+   {
+    "path": "/autoware/localization/scan_matching_status"
+   },
+   {
+    "path": "/autoware/localization/accuracy"
+   },
+   {
+    "path": "/autoware/localization/sensor_fusion_status"
+   },
+   {
+    "path": "/autoware/planning/topic_rate_check/route"
+   },
+   {
+    "path": "/autoware/planning/topic_rate_check/trajectory"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation"
+   },
+   {
+    "path": "/autoware/control/node_alive_monitoring/vehicle_cmd_gate"
+   },
+   {
+    "path": "/autoware/control/node_alive_monitoring/control_command_gate"
+   },
+   {
+    "path": "/autoware/system/emergency_stop_operation/vehicle_cmd_gate"
+   },
+   {
+    "path": "/autoware/system/emergency_stop_operation/control_command_gate"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/finite"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/interval"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/curvature"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/angle"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/lateral_acceleration"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/acceleration"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/deceleration"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/steering"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/steering_rate"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/velocity_deviation"
+   },
+   {
+    "path": "/autoware/planning/trajectory_validation/trajectory_shift"
+   }
+  ],
+  "diags": [
+   {
+    "parent": 10,
+    "name": "/adapi/node/mrm_request: delegate"
+   },
+   {
+    "parent": 29,
+    "name": "topic_state_monitor_trajectory_follower_control_cmd: control_topic_status"
+   },
+   {
+    "parent": 30,
+    "name": "topic_state_monitor_control_command_control_cmd: control_topic_status"
+   },
+   {
+    "parent": 48,
+    "name": "vehicle_cmd_gate: heartbeat"
+   },
+   {
+    "parent": 49,
+    "name": "control_command_gate: timeout_output"
+   },
+   {
+    "parent": 32,
+    "name": "autonomous_emergency_braking: aeb_emergency_stop"
+   },
+   {
+    "parent": 33,
+    "name": "lane_departure_checker_node: lane_departure"
+   },
+   {
+    "parent": 34,
+    "name": "controller_node_exe: control_state"
+   },
+   {
+    "parent": 19,
+    "name": "external_cmd_selector: heartbeat"
+   },
+   {
+    "parent": 20,
+    "name": "external_cmd_converter: remote_control_topic_status"
+   },
+   {
+    "parent": 23,
+    "name": "/adapi/node/localization: state"
+   },
+   {
+    "parent": 40,
+    "name": "topic_state_monitor_transform_map_to_base_link: localization_topic_status"
+   },
+   {
+    "parent": 41,
+    "name": "topic_state_monitor_pose_twist_fusion_filter_pose: localization_topic_status"
+   },
+   {
+    "parent": 42,
+    "name": "ndt_scan_matcher: scan_matching_status"
+   },
+   {
+    "parent": 43,
+    "name": "localization_error_monitor: ellipse_error_status"
+   },
+   {
+    "parent": 44,
+    "name": "localization: ekf_localizer"
+   },
+   {
+    "parent": 21,
+    "name": "topic_state_monitor_vector_map: map_topic_status"
+   },
+   {
+    "parent": 22,
+    "name": "topic_state_monitor_pointcloud_map: map_topic_status"
+   },
+   {
+    "parent": 27,
+    "name": "topic_state_monitor_object_recognition_objects: perception_topic_status"
+   },
+   {
+    "parent": 28,
+    "name": "topic_state_monitor_obstacle_segmentation_pointcloud: perception_topic_status"
+   },
+   {
+    "parent": 25,
+    "name": "/adapi/node/routing: state"
+   },
+   {
+    "parent": 45,
+    "name": "topic_state_monitor_mission_planning_route: planning_topic_status"
+   },
+   {
+    "parent": 46,
+    "name": "topic_state_monitor_scenario_planning_trajectory: planning_topic_status"
+   },
+   {
+    "parent": 52,
+    "name": "planning_validator: trajectory_validation_finite"
+   },
+   {
+    "parent": 53,
+    "name": "planning_validator: trajectory_validation_interval"
+   },
+   {
+    "parent": 54,
+    "name": "planning_validator: trajectory_validation_curvature"
+   },
+   {
+    "parent": 55,
+    "name": "planning_validator: trajectory_validation_relative_angle"
+   },
+   {
+    "parent": 56,
+    "name": "planning_validator: trajectory_validation_lateral_acceleration"
+   },
+   {
+    "parent": 57,
+    "name": "planning_validator: trajectory_validation_acceleration"
+   },
+   {
+    "parent": 58,
+    "name": "planning_validator: trajectory_validation_deceleration"
+   },
+   {
+    "parent": 59,
+    "name": "planning_validator: trajectory_validation_steering"
+   },
+   {
+    "parent": 60,
+    "name": "planning_validator: trajectory_validation_steering_rate"
+   },
+   {
+    "parent": 61,
+    "name": "planning_validator: trajectory_validation_velocity_deviation"
+   },
+   {
+    "parent": 62,
+    "name": "planning_validator: trajectory_validation_trajectory_shift"
+   },
+   {
+    "parent": 37,
+    "name": "duplicated_node_checker: duplicated_node_checker"
+   },
+   {
+    "parent": 18,
+    "name": "service_log_checker: response_status"
+   },
+   {
+    "parent": 38,
+    "name": "topic_state_monitor_system_emergency_control_cmd: system_topic_status"
+   },
+   {
+    "parent": 50,
+    "name": "vehicle_cmd_gate: emergency_stop_operation"
+   },
+   {
+    "parent": 51,
+    "name": "control_command_gate: timeout_builtin"
+   },
+   {
+    "parent": 35,
+    "name": "topic_state_monitor_vehicle_status_velocity_status: vehicle_topic_status"
+   },
+   {
+    "parent": 36,
+    "name": "topic_state_monitor_vehicle_status_steering_status: vehicle_topic_status"
+   }
+  ],
+  "links": [
+   {
+    "parent": 0,
+    "child": 16
+   },
+   {
+    "parent": 0,
+    "child": 17
+   },
+   {
+    "parent": 0,
+    "child": 8
+   },
+   {
+    "parent": 0,
+    "child": 10
+   },
+   {
+    "parent": 1,
+    "child": 16
+   },
+   {
+    "parent": 1,
+    "child": 17
+   },
+   {
+    "parent": 1,
+    "child": 9
+   },
+   {
+    "parent": 1,
+    "child": 10
+   },
+   {
+    "parent": 2,
+    "child": 10
+   },
+   {
+    "parent": 3,
+    "child": 11
+   },
+   {
+    "parent": 3,
+    "child": 12
+   },
+   {
+    "parent": 3,
+    "child": 13
+   },
+   {
+    "parent": 3,
+    "child": 14
+   },
+   {
+    "parent": 3,
+    "child": 15
+   },
+   {
+    "parent": 3,
+    "child": 16
+   },
+   {
+    "parent": 3,
+    "child": 17
+   },
+   {
+    "parent": 3,
+    "child": 10
+   },
+   {
+    "parent": 4,
+    "child": 11
+   },
+   {
+    "parent": 4,
+    "child": 12
+   },
+   {
+    "parent": 4,
+    "child": 13
+   },
+   {
+    "parent": 4,
+    "child": 14
+   },
+   {
+    "parent": 4,
+    "child": 15
+   },
+   {
+    "parent": 4,
+    "child": 16
+   },
+   {
+    "parent": 4,
+    "child": 17
+   },
+   {
+    "parent": 5,
+    "child": 11
+   },
+   {
+    "parent": 5,
+    "child": 12
+   },
+   {
+    "parent": 5,
+    "child": 13
+   },
+   {
+    "parent": 5,
+    "child": 14
+   },
+   {
+    "parent": 5,
+    "child": 15
+   },
+   {
+    "parent": 5,
+    "child": 16
+   },
+   {
+    "parent": 5,
+    "child": 17
+   },
+   {
+    "parent": 6,
+    "child": 16
+   },
+   {
+    "parent": 6,
+    "child": 17
+   },
+   {
+    "parent": 7,
+    "child": 18
+   },
+   {
+    "parent": 8,
+    "child": 19
+   },
+   {
+    "parent": 8,
+    "child": 20
+   },
+   {
+    "parent": 9,
+    "child": 19
+   },
+   {
+    "parent": 9,
+    "child": 20
+   },
+   {
+    "parent": 11,
+    "child": 21
+   },
+   {
+    "parent": 11,
+    "child": 22
+   },
+   {
+    "parent": 12,
+    "child": 23
+   },
+   {
+    "parent": 12,
+    "child": 24
+   },
+   {
+    "parent": 13,
+    "child": 25
+   },
+   {
+    "parent": 13,
+    "child": 26
+   },
+   {
+    "parent": 14,
+    "child": 27
+   },
+   {
+    "parent": 14,
+    "child": 28
+   },
+   {
+    "parent": 15,
+    "child": 29
+   },
+   {
+    "parent": 15,
+    "child": 30
+   },
+   {
+    "parent": 15,
+    "child": 31
+   },
+   {
+    "parent": 15,
+    "child": 32
+   },
+   {
+    "parent": 15,
+    "child": 33
+   },
+   {
+    "parent": 15,
+    "child": 34
+   },
+   {
+    "parent": 16,
+    "child": 35
+   },
+   {
+    "parent": 16,
+    "child": 36
+   },
+   {
+    "parent": 17,
+    "child": 37
+   },
+   {
+    "parent": 17,
+    "child": 38
+   },
+   {
+    "parent": 17,
+    "child": 39
+   },
+   {
+    "parent": 24,
+    "child": 40
+   },
+   {
+    "parent": 24,
+    "child": 41
+   },
+   {
+    "parent": 24,
+    "child": 42
+   },
+   {
+    "parent": 24,
+    "child": 43
+   },
+   {
+    "parent": 24,
+    "child": 44
+   },
+   {
+    "parent": 26,
+    "child": 45
+   },
+   {
+    "parent": 26,
+    "child": 46
+   },
+   {
+    "parent": 26,
+    "child": 47
+   },
+   {
+    "parent": 31,
+    "child": 48
+   },
+   {
+    "parent": 31,
+    "child": 49
+   },
+   {
+    "parent": 39,
+    "child": 50
+   },
+   {
+    "parent": 39,
+    "child": 51
+   },
+   {
+    "parent": 47,
+    "child": 52
+   },
+   {
+    "parent": 47,
+    "child": 53
+   },
+   {
+    "parent": 47,
+    "child": 54
+   },
+   {
+    "parent": 47,
+    "child": 55
+   },
+   {
+    "parent": 47,
+    "child": 56
+   },
+   {
+    "parent": 47,
+    "child": 57
+   },
+   {
+    "parent": 47,
+    "child": 58
+   },
+   {
+    "parent": 47,
+    "child": 59
+   },
+   {
+    "parent": 47,
+    "child": 60
+   },
+   {
+    "parent": 47,
+    "child": 61
+   },
+   {
+    "parent": 47,
+    "child": 62
+   }
+  ]
+ },
+ "status": {
+  "stamp": {
+   "sec": 1787246913,
+   "nanosec": 247393763
+  },
+  "id": "18cd938deecde6f3",
+  "nodes": [
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "latch_level": 0,
+    "is_dependent": false
+   }
+  ],
+  "diags": [
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   },
+   {
+    "level": 0,
+    "input_level": 0,
+    "message": "",
+    "hardware_id": "",
+    "values": []
+   }
+  ],
+  "links": []
+ }
+}

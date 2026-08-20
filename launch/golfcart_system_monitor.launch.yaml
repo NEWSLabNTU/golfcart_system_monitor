@@ -9,6 +9,35 @@ launch:
     name: monitor_gps
     default: $(var use_gnss)
 
+# The mode availability strip reads Autoware's diagnostic graph straight from
+# the browser over rosbridge. The monitor node does not proxy it: the two graph
+# topics disagree on QoS (struct is RELIABLE + TRANSIENT_LOCAL, status is
+# BEST_EFFORT + VOLATILE) and rosbridge derives the profile per topic from the
+# publishers, which a hand-written subscriber has to get right by hand and keep
+# right through every Autoware upgrade.
+#
+# Off by default is wrong here: an operator who has to know to switch on the
+# fault display does not have a fault display. Set launch_rosbridge:=false when
+# something else already runs one on this host, or on a machine with no graph.
+- arg:
+    name: launch_rosbridge
+    default: "true"
+- arg:
+    name: rosbridge_port
+    default: "9090"
+
+- group:
+    if: $(var launch_rosbridge)
+    children:
+    - node:
+        pkg: rosbridge_server
+        exec: rosbridge_websocket
+        name: golfcart_rosbridge
+        param:
+        -
+          name: port
+          value: $(var rosbridge_port)
+
 - node:
     pkg: golfcart_system_monitor
     exec: golfcart_system_monitor_node.py
@@ -44,3 +73,6 @@ launch:
     -
       name: web_server_port
       value: 8080
+    -
+      name: rosbridge_port
+      value: $(var rosbridge_port)
