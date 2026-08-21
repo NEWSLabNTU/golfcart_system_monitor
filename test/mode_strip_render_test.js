@@ -9,9 +9,10 @@
 // every chip and the page still looks entirely plausible. The fixture keeps the
 // real node ordering for that reason, and nothing in it may be renumbered.
 //
-// Phase 4-O sub-phases O-C (the chips) and O-D (the failing path). The live
-// end-to-end counterpart is scripts/check/mode_strip_test.sh in the golf cart
-// repo, which injects a real fault and times the reaction.
+// Phase 4-O sub-phases O-C (the chips), O-D (the failing path) and O-E (the
+// fail-safe timeline). The live end-to-end counterpart is
+// scripts/check/mode_strip_test.sh in the golf cart repo, which injects a real
+// fault and times the reaction.
 //
 // The O-D checks fault a named LEAF and propagate the level up through the
 // fixture's real `links`, rather than setting mode levels directly. That keeps
@@ -29,7 +30,8 @@ const STATUS = fixture.status;
 // ---- minimal DOM and WebSocket, enough for the strip ----------------------
 const els = {};
 const mkEl = (id) => (els[id] = { id, className: '', textContent: '', innerHTML: '', onclick: null });
-['mode-chips', 'bridge-state', 'mode-note', 'fault-paths', 'fault-toggle'].forEach(mkEl);
+['mode-chips', 'bridge-state', 'mode-note', 'fault-paths', 'fault-toggle',
+ 'timeline-rows'].forEach(mkEl);
 global.document = { getElementById: (id) => els[id] || mkEl(id) };
 global.location = { hostname: '127.0.0.1' };
 global.setTimeout = () => 0;
@@ -119,7 +121,8 @@ function check(label, cond, detail) {
 
 // ---- checks ---------------------------------------------------------------
 setImmediate(() => {
-    check('subscribes to struct and status', sock.sent.length === 2,
+    // Two for the graph (O-C/O-D) and three for the timeline (O-E).
+    check('subscribes to the graph and the fail-safe topics', sock.sent.length === 5,
         sock.sent.map((s) => s.topic).join(', '));
 
     // O-A found these two topics disagree on QoS. rosbridge derives it per topic
@@ -207,13 +210,64 @@ setImmediate(() => {
     check('a changed graph id reloads instead of mislabelling',
         /reloading/.test(els['mode-chips'].innerHTML));
 
+    // ---- O-E: the fail-safe timeline -------------------------------------
+    const tl = () => els['timeline-rows'].innerHTML;
+    const rows = () => (tl().match(/class="tl-val [^"]*">[^<]*/g) || [])
+        .map((r) => r.replace(/^[^>]*>/, ''));
+
+    // The stub DOM starts blank rather than carrying the template's
+    // "nothing recorded yet" placeholder, so assert on the row count.
+    check('the timeline starts empty', rows().length === 0, JSON.stringify(tl()));
+
+    deliver('/api/fail_safe/mrm_state', { state: 2, behavior: 3 });
+    check('mrm state and behavior are labelled, not left as integers',
+        rows().some((r) => r.includes('MRM_OPERATING') && r.includes('COMFORTABLE_STOP')),
+        rows().join(' | '));
+
+    deliver('/system/emergency/hazard_status',
+        { status: { level: 3, emergency: true, emergency_holding: false } });
+    check('hazard level is labelled and emergency is called out',
+        rows().some((r) => r.includes('SINGLE_POINT_FAULT') && r.includes('emergency')));
+
+    deliver('/system/operation_mode/availability',
+        { stop: true, autonomous: false, local: true, remote: false,
+          emergency_stop: true, comfortable_stop: false, pull_over: false });
+    check('availability lists what IS available',
+        rows().some((r) => r.includes('stop') && r.includes('local')
+                           && !r.includes('autonomous')), rows()[0]);
+
+    const before = rows().length;
+    // These topics republish at rate. A timeline that logs every message is a
+    // log, not a timeline.
+    deliver('/api/fail_safe/mrm_state', { state: 2, behavior: 3 });
+    deliver('/system/emergency/hazard_status',
+        { status: { level: 3, emergency: true, emergency_holding: false } });
+    check('repeats of an unchanged value are not recorded',
+        rows().length === before, before + ' -> ' + rows().length);
+
+    deliver('/api/fail_safe/mrm_state', { state: 3, behavior: 2 });
+    check('a change IS recorded', rows().length === before + 1);
+    check('newest is first', rows()[0].includes('MRM_SUCCEEDED'), rows()[0]);
+
+    deliver('/system/operation_mode/availability',
+        { stop: false, autonomous: false, local: false, remote: false,
+          emergency_stop: false, comfortable_stop: false, pull_over: false });
+    check('nothing available is stated in words, not shown as a blank row',
+        rows()[0].includes('NOTHING AVAILABLE'), rows()[0]);
+
     // A page that cannot reach the bridge must not read as "no faults".
+    const beforeDrop = rows().length;
     sock.onclose();
     check('a dropped bridge blanks the chips and says so',
         /no data/.test(els['mode-chips'].innerHTML)
         && /bridge-down/.test(els['bridge-state'].className)
         && /not the same as/.test(els['mode-note'].textContent),
         els['bridge-state'].textContent);
+    // The timeline is the record of what happened, and a bridge drop is when
+    // that record matters most. Clearing it would destroy the evidence.
+    check('a dropped bridge does NOT clear the timeline, and is itself logged',
+        rows().length === beforeDrop + 1 && /DISCONNECTED/.test(rows()[0]),
+        rows()[0]);
 
     console.log(fails === 0
         ? '\nALL CHECKS PASSED'

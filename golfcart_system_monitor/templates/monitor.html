@@ -234,6 +234,23 @@
         /* Faults seen earlier in this session that have since cleared. */
         .fault-cleared { opacity: 0.65; }
         .fault-cleared .fault-mode-name { color: #ff9800; }
+        /* Fail-safe timeline: the order things happened in. */
+        .timeline { margin-top: 14px; border-top: 1px solid #eee; padding-top: 10px; }
+        .timeline h3 { font-size: 0.95em; margin: 0 0 6px 0; }
+        .timeline-rows {
+            font-family: monospace;
+            font-size: 0.8em;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .tl-row { display: flex; gap: 10px; padding: 2px 0; }
+        .tl-time { color: #999; white-space: nowrap; }
+        .tl-src { color: #555; min-width: 96px; }
+        .tl-val { flex: 1; }
+        .tl-mrm    { color: #d32f2f; font-weight: bold; }
+        .tl-hazard { color: #e65100; }
+        .tl-avail  { color: #1565c0; }
+        .timeline-empty { color: #999; font-size: 0.85em; }
         .refresh-btn {
             background-color: #2196F3;
             color: white;
@@ -287,6 +304,15 @@
             <!-- Which leaf made which mode unavailable. Empty when nothing is
                  wrong, which is the common case and should stay quiet. -->
             <div id="fault-paths" class="fault-paths"></div>
+            <!-- Fail-safe timeline. An instantaneous view cannot answer "what
+                 happened, in what order" after an incident, which is the
+                 question asked once the vehicle has already stopped. -->
+            <div class="timeline">
+                <h3>Fail-safe timeline</h3>
+                <div id="timeline-rows" class="timeline-rows">
+                    <div class="timeline-empty">nothing recorded yet</div>
+                </div>
+            </div>
         </div>
 
         <div class="refresh-container">
@@ -339,6 +365,32 @@
         var STRUCT = '/api/system/diagnostics/struct';
         var STATUS = '/api/system/diagnostics/status';
 
+        // O-E, the fail-safe timeline.
+        //
+        // mrm_state comes from the AD API. hazard_status and per-mode
+        // availability have NO API equivalent and are read from the internal
+        // topics; that is a deliberate exception to the "subscribe the API"
+        // rule, recorded in the phase doc.
+        var MRM    = '/api/fail_safe/mrm_state';
+        var HAZARD = '/system/emergency/hazard_status';
+        var AVAIL  = '/system/operation_mode/availability';
+
+        // MrmState. The behavior enum is marked deprecated in the message file
+        // in favour of ListMrmDescription, but that service returns an EMPTY
+        // list on this deployment: the FailSafeNode takes an `mrm_descriptions`
+        // parameter that nothing here sets. Measured, see the phase doc. So the
+        // enum is what we have, and these names must be revisited on upgrade.
+        var MRM_STATE = {0: 'UNKNOWN', 1: 'NORMAL', 2: 'MRM_OPERATING',
+                         3: 'MRM_SUCCEEDED', 4: 'MRM_FAILED'};
+        var MRM_BEHAVIOR = {0: 'UNKNOWN', 1: 'NONE', 2: 'EMERGENCY_STOP',
+                            3: 'COMFORTABLE_STOP', 4: 'PULL_OVER'};
+        var HAZARD_LEVEL = {0: 'NO_FAULT', 1: 'SAFE_FAULT', 2: 'LATENT_FAULT',
+                            3: 'SINGLE_POINT_FAULT'};
+
+        var MAX_EVENTS = 200;
+        var events = [];        // newest last
+        var lastSeen = {};      // source -> last rendered value, to log changes only
+
         // DiagnosticStatus levels. STALE is 3.
         var LEVEL_CLASS = ['mode-ok', 'mode-warn', 'mode-error', 'mode-stale'];
         var LEVEL_NAME  = ['OK', 'WARN', 'ERROR', 'STALE'];
@@ -356,6 +408,7 @@
         var stateEl  = document.getElementById('bridge-state');
         var noteEl   = document.getElementById('mode-note');
         var pathsEl  = document.getElementById('fault-paths');
+        var timelineEl = document.getElementById('timeline-rows');
 
         var childrenOf = {};    // node index -> child node indices
         var leavesOf = {};      // node index -> leaf indices
@@ -384,8 +437,47 @@
             graph = null; modeIdx = []; lastStatusMs = 0; lastStatus = null;
             chipsEl.innerHTML = '<span class="mode-chip mode-unknown">no data</span>';
             pathsEl.innerHTML = '';
+            // The timeline is NOT cleared. It is the record of what happened,
+            // and a bridge drop is the moment that record matters most. Log the
+            // drop as an event instead.
+            note('bridge', 'tl-mrm', 'DISCONNECTED: ' + why);
+            lastSeen = {mrm: undefined, hazard: undefined, available: undefined,
+                        bridge: 'DISCONNECTED: ' + why};
             noteEl.textContent = 'Mode availability is unknown while the bridge is down. '
                 + 'This is not the same as "no faults".';
+        }
+
+        // Record a change. Only changes: these topics republish at rate, and a
+        // timeline that logs every message is a log, not a timeline.
+        function note(source, cls, value) {
+            if (lastSeen[source] === value) { return; }
+            lastSeen[source] = value;
+            events.push({t: new Date(), source: source, cls: cls, value: value});
+            if (events.length > MAX_EVENTS) { events.shift(); }
+            renderTimeline();
+        }
+
+        function renderTimeline() {
+            if (events.length === 0) {
+                timelineEl.innerHTML = '<div class="timeline-empty">nothing recorded yet</div>';
+                return;
+            }
+            var html = '';
+            // Newest first: after an incident the last thing that happened is
+            // what is being looked for.
+            for (var i = events.length - 1; i >= 0; i--) {
+                var e = events[i];
+                var hh = String(e.t.getHours()).padStart(2, '0');
+                var mm = String(e.t.getMinutes()).padStart(2, '0');
+                var ss = String(e.t.getSeconds()).padStart(2, '0');
+                var ms = String(e.t.getMilliseconds()).padStart(3, '0');
+                html += '<div class="tl-row">'
+                     + '<span class="tl-time">' + hh + ':' + mm + ':' + ss + '.' + ms + '</span>'
+                     + '<span class="tl-src">' + e.source + '</span>'
+                     + '<span class="tl-val ' + e.cls + '">' + esc(e.value) + '</span>'
+                     + '</div>';
+            }
+            timelineEl.innerHTML = html;
         }
 
         function connect() {
@@ -409,6 +501,18 @@
                 ws.send(JSON.stringify({op: 'subscribe', topic: STATUS,
                     type: 'autoware_adapi_v1_msgs/msg/DiagGraphStatus',
                     throttle_rate: 200, queue_length: 1}));
+                // Timeline sources. Also no QoS: mrm_state is
+                // RELIABLE + TRANSIENT_LOCAL while the other two are VOLATILE,
+                // so a single hand-picked profile would be wrong for one of
+                // them. rosbridge derives each from its publisher.
+                ws.send(JSON.stringify({op: 'subscribe', topic: MRM,
+                    type: 'autoware_adapi_v1_msgs/msg/MrmState'}));
+                ws.send(JSON.stringify({op: 'subscribe', topic: HAZARD,
+                    type: 'autoware_system_msgs/msg/HazardStatusStamped',
+                    throttle_rate: 200, queue_length: 1}));
+                ws.send(JSON.stringify({op: 'subscribe', topic: AVAIL,
+                    type: 'tier4_system_msgs/msg/OperationModeAvailability',
+                    throttle_rate: 200, queue_length: 1}));
             };
 
             ws.onmessage = function (ev) {
@@ -417,7 +521,26 @@
                 if (m.op !== 'publish') { return; }
                 if (m.topic === STRUCT) { onStruct(m.msg); }
                 else if (m.topic === STATUS) { onStatus(m.msg); }
+                else if (m.topic === MRM) {
+                    note('mrm', 'tl-mrm',
+                        (MRM_STATE[m.msg.state] || m.msg.state) + ' / '
+                        + (MRM_BEHAVIOR[m.msg.behavior] || m.msg.behavior));
+                } else if (m.topic === HAZARD) {
+                    var h = m.msg.status || {};
+                    note('hazard', 'tl-hazard',
+                        (HAZARD_LEVEL[h.level] || h.level)
+                        + (h.emergency ? ' emergency' : '')
+                        + (h.emergency_holding ? ' HOLDING' : ''));
+                } else if (m.topic === AVAIL) {
+                    var a = m.msg, on = [];
+                    ['stop', 'autonomous', 'local', 'remote',
+                     'emergency_stop', 'comfortable_stop', 'pull_over'].forEach(function (k) {
+                        if (a[k]) { on.push(k); }
+                    });
+                    note('available', 'tl-avail', on.length ? on.join(' ') : 'NOTHING AVAILABLE');
+                }
             };
+
 
             ws.onclose = function () {
                 bridgeLost('rosbridge disconnected, retrying');
