@@ -54,6 +54,9 @@ monitor_topics:
     # - [nav_msgs/msg/Odometry, /vehicle/odometry, Vehicle Odometry, monitor_vehicle, reliable]
   diagnostics:
     - [diagnostic_msgs/msg/DiagnosticArray, /diagnostics, System Diagnostics, monitor_diagnostics, reliable]
-    - [diagnostic_msgs/msg/DiagnosticArray, /diagnostics_agg, Aggregated Diagnostics, monitor_diagnostics, reliable]
+    # /diagnostics_agg is NOT published in this stack and the row is gone.
+    # Autoware uses autoware_diagnostic_graph_aggregator, which publishes
+    # DiagGraphStruct and DiagGraphStatus, not an aggregated DiagnosticArray.
+    # The row sat here as a permanently dead entry in the monitor's own table.
   system:
     - [rcl_interfaces/msg/Log, /rosout, System Log, "", reliable]  # Empty string means no parameter control, always enabled
